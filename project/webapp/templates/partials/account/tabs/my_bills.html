@@ -1,26 +1,47 @@
-{% if representative %}
 {% verbatim %}
-<div class="profile-civi-list">
-    <div class="row tab-title">
-        <div class="col s6 title-lato">My Bills</div>
-    </div>
-    <!-- Populate Bills list -->
-    <div class="subtitle-lato">All Current Bills</div>
-    <div class="row">
-            {{# if (this.model.get('rep_data').bills.length > 0) { }}
-                {{# _.each(this.model.get('rep_data').bills, function (c) { }}
-                    {{= cw.underscorePartial('bill-template', JSON.parse(c))}}
-                {{# }, this); }}
-            {{# } else { }}
-            <div class="section no-state">
-                <div class="container">
-                    <div class="section">
-                        <div class="center title-lato text">NO BILLS</div>
+    <div class="profile-my-bills-list">
+        <div class="row tab-title">
+            <div class="col s6 title-lato">My Bills</div>
+        </div>
+
+        <div class="section no-state">
+            <div class="container">
+                <div class="section">
+                    <!-- Populate Bills list -->
+                    <div class="subtitle-lato">Bills I support</div>
+                    <div class="row">
+                        {{# _.each(this.model.get('my_bills').supported_bills, function (bill) { }}
+                        <b>{{ bill.title }}</b>
+                        {{# }, this); }}
+                    </div>
+                    <div class="subtitle-lato">Bills I oppose</div>
+                    <div class="row">
+                        {{# _.each(this.model.get('my_bills').opposed_bills, function (bill) { }}
+                        <b>{{ bill.title }}</b>
+                        {{# }, this); }}
                     </div>
                 </div>
+
             </div>
-            {{# } }}
+        </div>
     </div>
-</div>
 {% endverbatim %}
-{% endif %}
+
+
+<script>
+    var status = "less";
+
+    function toggleText(billsArray) {
+        var text = "Here is some text that I want added to the HTML file";
+
+        if (status === "less") {
+            document.getElementById("textArea").innerHTML = text;
+            document.getElementById("toggleButton").innerText = "See Less";
+            status = "more";
+        } else if (status === "more") {
+            document.getElementById("textArea").innerHTML = "";
+            document.getElementById("toggleButton").innerText = "See More";
+            status = "less"
+        }
+    }
+</script>
