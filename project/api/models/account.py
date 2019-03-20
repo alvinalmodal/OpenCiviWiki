@@ -273,16 +273,23 @@ class Account(models.Model):
 
         for activity in activities.iterator():
             if activity.is_negative_vote:
-                self._add_linked_civis(supported_bills, activity)
+                self._add_linked_civis(supported_bills, opposed_bills, activity)
             elif activity.is_positive_vote:
-                self._add_linked_civis(opposed_bills, activity)
+                self._add_linked_civis(opposed_bills, supported_bills, activity)
 
         return {
             'opposed_bills': BillSerializer(opposed_bills, many=True).data,
             'supported_bills': BillSerializer(supported_bills, many=True).data,
         }
 
-    def _add_linked_civis(self, aggregator, activity):
-        aggregator += activity.civi.linked_bills.all()
+    def _add_linked_civis(self, aggregator, adversarial_aggregator, activity):
+        if activity.civi.c_type == 'cause':
+            aggregator += activity.civi.linked_bills.all()
+        elif activity.civi.c_type == "solution":
+            adversarial_aggregator += activity.civi.linked_bills.all()
+
         for linked_civi in activity.civi.linked_civis.iterator():
-            aggregator += linked_civi.linked_bills.all()
+            if linked_civi.c_type == 'cause':
+                aggregator += linked_civi.linked_bills.all()
+            elif activity.civi.c_type == "solution":
+                adversarial_aggregator += linked_civi.linked_bills.all()
